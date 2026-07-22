@@ -1,0 +1,38 @@
+services:
+  qwenpaw:
+    image: agentscope/qwenpaw:latest
+    container_name: qwenpaw
+    restart: unless-stopped
+    #ports:
+    #  - "8088:8088"
+    env_file:
+      - .env
+    volumes:
+      # Data, config, memory, skills — your personal assistant's brain
+      - ${VOLUME_PATH}/data:/app/working
+      # API keys and secrets — isolated volume for security
+      - ${VOLUME_PATH}/secrets:/app/working.secret
+      # Backup archives
+      - ${VOLUME_PATH}/backups:/app/working.backups
+      # Worksapce
+      - ${WORKSPACE}:/root/workspace
+      # Timezone
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      # - TZ=Asia/Kolkata
+      - LANG=en_US.UTF-8
+      - LANGUAGE=en
+    networks:
+      - caddy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+
+networks:
+  caddy:
+    external: true

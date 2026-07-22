@@ -1,0 +1,38 @@
+services:
+  openchamber:
+    build:
+      context: ./openchamber
+      dockerfile: Dockerfile
+    image: openchamber:latest
+    container_name: openchamber
+    restart: unless-stopped
+    user: "0:0"
+    # ports:
+    #   - "3000:3000"
+    expose:
+      - "4096"
+    volumes:
+      ### OpenChamber Volumes
+      - ${OPENCHAMBER_DATA}:/home/openchamber/.config/openchamber
+      - ${OPENCHAMBER_DATA}/ssh:/home/openchamber/.ssh
+      ### OpenCode Volumes
+      - ${OPENCODE_DATA}/share:/home/openchamber/.local/share/opencode
+      - ${OPENCODE_DATA}/state:/home/openchamber/.local/state/opencode
+      - ${OPENCODE_DATA}/config:/home/openchamber/.config/opencode
+      ### Workspace
+      - ${WORKSPACE_DIR}:/home/openchamber/workspace
+      # Timezone
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    networks:
+      - caddy
+      - mcp
+
+
+networks:
+  caddy:
+    external: true
+  mcp:
+    external: true

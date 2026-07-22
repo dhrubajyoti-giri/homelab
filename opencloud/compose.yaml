@@ -1,0 +1,24 @@
+services:
+  opencloud:
+    image: opencloudeu/opencloud-rolling:latest
+    container_name: opencloud
+    restart: unless-stopped
+    user: "1000:1000"
+    # ports:
+    #   - "9200:9200"
+    environment:
+      - PROXY_TLS=false
+      - OC_INSECURE=false
+      - PROXY_HTTP_ADDR=0.0.0.0:9200
+      - OC_URL=${BASE_URL}
+    volumes:
+      - ${VOLUME_PATH}/data:/var/lib/opencloud
+      - ${VOLUME_PATH}/config:/etc/opencloud
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - caddy
+
+
+networks:
+  caddy:
+    external: true

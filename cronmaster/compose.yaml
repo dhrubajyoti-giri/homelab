@@ -1,0 +1,29 @@
+services:
+  cronmaster:
+    image: ghcr.io/fccview/cronmaster:latest
+    container_name: cronmaster
+    restart: unless-stopped
+    user: "0:0"
+    #ports:
+    #  - "3000:3000"
+    pid: "host"
+    privileged: true
+    init: true
+    platform: linux/arm64
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${VOLUME_PATH}/scripts:/app/scripts
+      - ${VOLUME_PATH}/data:/app/data
+      - ${VOLUME_PATH}/snippets:/app/snippets
+      # Timezone
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    networks:
+      - caddy
+
+
+networks:
+  caddy:
+    external: true

@@ -1,0 +1,18 @@
+# Ignore everything
+*
+
+# Allow folders to be traversed
+!*/
+
+# Allow documentation
+#!*.md
+
+# Allow docker compose files
+!/*/compose.yaml
+!/*/docker-compose.yaml
+!/*/Dockerfile
+!/*/*/Dockerfile
+
+# Allow essential files
+!.gitignore
+!README.md

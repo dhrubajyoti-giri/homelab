@@ -1,0 +1,61 @@
+services:
+  vikunja:
+    image: vikunja/vikunja:latest
+    container_name: vikunja
+    restart: unless-stopped
+    # ports:
+    #   - 3456:3456
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ${VOLUME_PATH}/files:/app/vikunja/files
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      VIKUNJA_SERVICE_PUBLICURL: ${PUBLIC_URL}
+      VIKUNJA_SERVICE_ENABLEREGISTRATION: ${ENABLE_REGISTRATION}
+      VIKUNJA_DATABASE_HOST: db
+      VIKUNJA_DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      VIKUNJA_DATABASE_TYPE: postgres
+      VIKUNJA_DATABASE_USER: vikunja
+      VIKUNJA_DATABASE_DATABASE: vikunja
+      VIKUNJA_SERVICE_SECRET: ${SECRET}
+      VIKUNJA_REDIS_ENABLED: 1
+      VIKUNJA_REDIS_HOST: 'redis:6379'
+      VIKUNJA_CACHE_ENABLED: 1
+      VIKUNJA_CACHE_TYPE: redis
+    networks:
+      - caddy
+      - vikunja
+      
+  db:
+    image: paradedb/paradedb:latest
+    container_name: vikunja_postgres
+    restart: unless-stopped
+    volumes:
+      - ${VOLUME_PATH}/db:/var/lib/postgresql
+    environment:
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_USER: vikunja
+      POSTGRES_DB: vikunja
+    networks:
+      - vikunja
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER"]
+      interval: 2s
+      start_period: 30s
+  
+  redis:
+    image: redis:latest
+    container_name: vikunja_redis
+    restart: unless-stopped
+    networks:
+      - vikunja
+                
+networks:
+  caddy:
+    external: true
+  vikunja:
+    name: vikunja

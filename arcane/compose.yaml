@@ -1,0 +1,22 @@
+services:
+  arcane:
+    image: ghcr.io/getarcaneapp/arcane:latest
+    container_name: arcane
+    #ports:
+    #  - '3552:3552'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${VOLUME_PATH}:/app/data
+    environment:
+      - APP_URL=https://arcane.dg.linkpc.net
+      - PUID=1000
+      - PGID=1000
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+    restart: unless-stopped
+    networks:
+      - caddy
+
+networks:
+  caddy:
+    external: true

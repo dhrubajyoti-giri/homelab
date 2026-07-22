@@ -1,0 +1,37 @@
+services:
+  hermes-web-ui:
+    image: ekkoye8888/hermes-web-ui:latest
+    container_name: hermes-web-ui
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    # ports:
+    #   - "${PORT:-6060}:${PORT:-6060}"
+    #   - "${PREVIEW_FRONTEND_PORT:-8651}:8651"
+    #   - "${XAI_OAUTH_PORT:-56121}:56121"
+    volumes:
+      - ${HERMES_DATA_DIR}:${HERMES_HOME}
+      - ${HERMES_DATA_DIR}/hermes-web-ui:/home/agent/.hermes-web-ui
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - PORT=${PORT:-6060}
+      - HERMES_HOME=${HERMES_HOME}
+      - WORKSPACE_BASE=${WORKSPACE}
+      - HERMES_BIN=/opt/hermes/bin/hermes
+      - HERMES_WEB_UI_MANAGED_GATEWAY=${HERMES_WEB_UI_MANAGED_GATEWAY}  # gateway will be managed separately by hermes agent
+      - HERMES_WEB_UI_XAI_CALLBACK_BIND_HOST=0.0.0.0
+      - HERMES_ALLOW_ROOT_GATEWAY=1
+      - PATH=/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    networks:
+      - caddy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:${PORT}/health || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+
+networks:
+  caddy:
+    external: true

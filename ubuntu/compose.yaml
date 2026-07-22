@@ -1,0 +1,15 @@
+services:
+  ubuntu:
+    image: ubuntu:24.04
+    container_name: ubuntu
+    restart: unless-stopped
+    volumes:
+      - /backup/docker/ubuntu:/
+      - /etc/localtime:/etc/localtime:ro
+
+      
+
+# Add more services as needed
+# networks:
+#   default:
+#     driver: bridge

@@ -1,0 +1,48 @@
+services:
+  borg-ui:
+    image: ainullcode/borg-ui:latest
+    container_name: borg-ui
+    restart: unless-stopped
+    #ports:
+    #  - "8081:8081"
+    volumes:
+      - ${VOLUME_PATH}/data:/data
+      - ${CACHE_PATH}:/home/borg/.cache/borg
+      - ${SOURCE_PATH}:${SOURCE_PATH}:r   # replace with the directory you want to back up
+      - ${BACKUP_PATH}:${BACKUP_PATH}:rw
+      # Timezone
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      # - TZ=${TIMEZONE}
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - borg-ui
+      - caddy
+
+  redis:
+    image: redis:8.0-alpine
+    container_name: borg-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 2gb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - borg-ui
+
+networks:
+  borg-ui:
+    name: borg-ui
+  caddy:
+    external: true
+
+

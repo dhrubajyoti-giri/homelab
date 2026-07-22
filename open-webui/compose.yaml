@@ -1,0 +1,19 @@
+name: open-webui
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    #ports:
+    #  - 8080:8080
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ${VOLUME_PATH}:/app/backend/data      
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - caddy
+
+networks:
+  caddy:
+    external: true

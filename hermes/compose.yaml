@@ -1,0 +1,116 @@
+services:
+  hermes:
+    image: nousresearch/hermes-agent:latest
+    container_name: hermes
+    restart: unless-stopped
+    command: >
+      bash -c "
+        # curl -fsSL https://opencode.ai/install | bash &&
+        hermes gateway run &
+        exec hermes dashboard --host 0.0.0.0 --port ${HERMES_DASHBOARD_PORT} --insecure --tui --no-open --skip-build
+      "
+    #ports:
+    #  - "${TAILSCALE_IP}:9119:9119"
+    #  - "8642:8642"   # gateway API
+    volumes:
+      - ${VOLUME_PATH}:/opt/data
+      - /home/ubuntu/lib:/opt/lib
+      - hermes-agent-src:/opt/hermes
+      # Timezone
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      ## OpenCode
+      # - ${OPENCODE_DATA}/share:${HERMES_HOME}/.local/share/opencode
+      # - ${OPENCODE_DATA}/state:${HERMES_HOME}/.local/state/opencode
+      # - ${OPENCODE_DATA}/config:${HERMES_HOME}/.config/opencode
+    env_file:
+      - .env
+    environment:
+      TZ: Asia/Kolkata
+    networks:
+      - caddy
+      # - hermes
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: "2.0"
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:8642/health && curl -fsS http://localhost:9119/api/status || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+
+# Hermes WebUI — single-container Docker Compose
+# This is the simplest setup: one WebUI container that runs the agent in-process.
+# The WebUI auto-detects host UID/GID from the mounted .hermes volume.
+
+  hermes-webui:
+    image: ghcr.io/nesquena/hermes-webui:latest
+    container_name: hermes-webui
+    restart: unless-stopped
+    command: >
+      bash -c "
+        # mkdir -p /home/hermeswebui/.local/bin &&
+        # ln -sf ${HERMES_AGENT_SRC}/bin/hermes /home/hermeswebui/.local/bin/hermes &&
+        # cp /opt/hermes/bin/hermes /usr/local/bin &&
+        # cd /usr/local/bin &&
+        # hermes gateway run &
+        # hermes dashboard --host 0.0.0.0 --insecure &
+        #
+        exec /hermeswebui_init.bash
+      "
+    depends_on:
+      - hermes
+    #ports:
+    #  - "8787:8787"
+    volumes:
+      # Hermes Agent
+      - ${VOLUME_PATH}:${HERMES_HOME}
+      - hermes-agent-src:${HERMES_AGENT_SRC}:ro
+
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      # Hermes Agent home & agent-src folder
+      - HERMES_HOME=${HERMES_HOME}
+      - HERMES_WEBUI_AGENT_DIR=${HERMES_AGENT_SRC}
+      # Hermes Agent Gateway connection
+      - HERMES_WEBUI_CHAT_BACKEND=gateway 
+      - HERMES_WEBUI_GATEWAY_BASE_URL=${WEBUI_GATEWAY_URL}
+      - HERMES_WEBUI_GATEWAY_API_KEY=${API_SERVER_KEY}
+      # UID & GID
+      - WANTED_UID=${HERMES_UID:-1000}
+      - WANTED_GID=${HERMES_GID:-1000}
+      # Required: bind address and port
+      - HERMES_WEBUI_HOST=0.0.0.0
+      - HERMES_WEBUI_PORT=8787
+      # Where to store sessions, workspaces, and other state (default: ~/.hermes/webui)
+      - HERMES_WEBUI_STATE_DIR=${HERMES_HOME}/webui
+      # Default workspace directory shown on first launch
+      - HERMES_WEBUI_DEFAULT_WORKSPACE=${WORKSPACE_DIR}
+      # Optional: set a password for remote access
+     # - HERMES_WEBUI_PASSWORD=
+      #
+      # Bind-mount permission handling (fixes #1389, #1399):
+      #   When you mount an EXISTING ~/.hermes directory (the common case),
+      #   the WebUI's startup credential-permission fixer can clash with
+      #   your host file modes (e.g. 0640 group-readable .env files).
+      #   Set HERMES_SKIP_CHMOD=1 to bypass the fixer entirely, OR set
+      #   HERMES_HOME_MODE=0640 to allow group bits while still stripping
+      #   world-readable. Both are documented in api/startup.py.
+      # - HERMES_SKIP_CHMOD=1
+      # - HERMES_HOME_MODE=0640
+    networks:
+      - caddy
+
+
+networks:
+  caddy:
+    external: true
+  hermes:
+    name: hermes
+
+volumes:
+  hermes-agent-src:

@@ -1,0 +1,29 @@
+services:
+  backrest:
+    image: garethgeorge/backrest:latest
+    container_name: backrest
+    restart: unless-stopped
+    hostname: backrest
+    #ports:
+    #  - 9898:9898
+    volumes:
+      - /home/ubuntu/.volumes:/home/ubuntu/.volumes:ro
+      - /backup/backrest:/backup/backrest
+      
+      - /etc/localtime:/etc/localtime:ro
+      - ${VOLUME_PATH}/data:/data
+      - ${VOLUME_PATH}/config:/config
+      # - /home/ubuntu/.volumes/borg-ui:/userdata # [optional] mount local paths to backup here.
+      # - ${VOLUME_PATH}/repos:/repos # [optional] mount repos if using local storage, not necessary for remotes e.g. B2, S3, etc.
+      # - /tmp/volumes/backrest/cache:/cache
+    environment:
+      - BACKREST_DATA=/data # path for backrest data. restic binary and the database are placed here.
+      - BACKREST_CONFIG=/config/config.json # path for the backrest config file.
+      - XDG_CACHE_HOME=/cache # path for the restic cache which greatly improves performance.
+      # - TZ=Asia/Kolkata # set the timezone for the container, used as the timezone for cron jobs.
+    networks:
+      - caddy
+  
+networks:
+  caddy:
+    external: true

@@ -1,0 +1,82 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: joplin-postgres
+    restart: unless-stopped
+    #ports:
+    #  - "5432:5432"
+    volumes:
+      - ${VOLUME_PATH}/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=joplin
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - joplin
+
+  joplin:
+    image: joplin/server:latest
+    container_name: joplin
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    #ports:
+    #    - "22300:22300"
+    environment:
+      - APP_PORT=${APP_PORT:-22300}
+      - APP_BASE_URL=${APP_BASE_URL:-https://joplin.dg.linkpc.net}
+      - DB_CLIENT=pg
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=joplin
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - MAILER_ENABLED=1
+      - MAILER_HOST=smtp.gmail.com
+      - MAILER_PORT=465
+      - MAILER_SECURITY=tls
+      - MAILER_AUTH_USER=${MAILER_AUTH_USER:-youremail@gmail.com}
+      - MAILER_AUTH_PASSWORD=${MAILER_AUTH_PASSWORD}
+      - MAILER_NOREPLY_NAME=Joplin
+      - MAILER_NOREPLY_EMAIL=${MAILER_AUTH_USER:-email@email.com}
+    networks:
+      - joplin
+      - caddy
+
+
+  
+  # django-joplin-vieweb:
+  #   image: gri38/django-joplin-vieweb:latest
+  #   container_name: joplin-vieweb
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - joplin-terminal-xapi
+  #   environment:
+  #     - ORIGINS='${WEB_APP_BASE_URL}'
+  #     - JOPLIN_LOGIN_REQUIRED=True
+  #   #ports:
+  #   #  - 8000:8000
+    # volumes:
+  #     - ${VOLUME_PATH}/joplin-vieweb/joplin:/root/.config/joplin:ro
+  #     - ${VOLUME_PATH}/joplin-vieweb/joplin-vieweb:/root/.config/joplin-vieweb
+  #   networks:
+  #     - joplin-web
+  #     - caddy
+
+  # joplin-terminal-xapi:
+  #   image: gri38/joplin-terminal-xapi:latest
+  #   container_name: joplin-terminal-xapi
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ${VOLUME_PATH}/joplin-vieweb/joplin:/root/.config/joplin
+  #   networks:
+  #     - joplin-web
+          
+            
+networks:
+  caddy:
+    external: true
+  joplin:
+    name: joplin
+  # joplin-web:
+  #   name: joplin-web
