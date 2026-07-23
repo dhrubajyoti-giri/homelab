@@ -1,0 +1,20 @@
+services:
+  trilium:
+    image: docker.io/triliumnext/trilium:stable
+    container_name: trilium
+    #ports:
+    #  - "8080:8080"
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    volumes:
+      - ${VOLUME_PATH}:/home/node/trilium-data:Z
+      # Timezone
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    networks:
+      - caddy
+networks:
+  caddy:
+    external: true

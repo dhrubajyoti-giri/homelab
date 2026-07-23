@@ -8,12 +8,17 @@ services:
     restart: unless-stopped
     #ports:
     #  - "8080:8080"
+    group_add:
+      - "${DOCKER_SOCKET_GID}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${VOLUME_PATH}:/var/lib
+      - ${VOLUME_PATH}:/var/lib/dockmesh
+      # - ./stacks:/var/lib/dockmesh/stacks
       # Timezone
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+    environment:
+      DOCKMESH_BASE_URL: ${DOCKMESH_BASE_URL}
     networks:
       - caddy
 

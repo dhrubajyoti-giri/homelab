@@ -1,0 +1,27 @@
+
+services:
+  caddy:
+    image: caddy:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-caddy}
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ${VOLUME_PATH}/Caddyfile:/etc/caddy/Caddyfile
+      - ${VOLUME_PATH}/data:/data:Z
+      - ${VOLUME_PATH}/config:/config:Z
+      # Timezone
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - caddy
+      - nextcloud-aio
+
+
+
+networks:
+  caddy:
+    name: caddy
+  nextcloud-aio:
+    external: true
