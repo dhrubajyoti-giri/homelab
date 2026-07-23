@@ -14,5 +14,6 @@
 !/*/*/Dockerfile
 
 # Allow essential files
+!index.html
 !.gitignore
 !README.md

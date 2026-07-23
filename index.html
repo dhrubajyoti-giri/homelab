@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhrubajyoti's Homelab — Dashboard</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --muted: #8b949e;
+            --accent: #58a6ff;
+            --green: #3fb950;
+            --purple: #bc8cff;
+            --orange: #d29922;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 2rem 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        header p {
+            color: var(--muted);
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        header .badges {
+            margin-top: 0.75rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .badge.arch {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .badge.os {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .badge.proxy {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .badge.auth {
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            flex: 1;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .legend-dot.own-auth {
+            background: #58a6ff;
+        }
+
+        .legend-dot.authelia {
+            background: #bc8cff;
+        }
+
+        .legend-dot.core {
+            background: #3fb950;
+        }
+
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .service {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: border-color 0.2s, transform 0.15s;
+        }
+
+        .service:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .service .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .service .top h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .service .top .auth-badge {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .auth-badge.own-auth {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+        }
+
+        .auth-badge.authelia {
+            background: rgba(188, 140, 255, 0.15);
+            color: #bc8cff;
+        }
+
+        .auth-badge.core {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+        }
+
+        .service .domain {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        .service .domain a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .service .domain a:hover {
+            text-decoration: underline;
+        }
+
+        .service .desc {
+            margin-top: 0.5rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+            line-height: 1.45;
+        }
+
+        .service .status-row {
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 6px rgba(63, 185, 80, 0.4);
+        }
+
+        .status-label {
+            color: var(--green);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+            color: var(--text);
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .note {
+            background: rgba(210, 153, 34, 0.1);
+            border: 1px solid rgba(210, 153, 34, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin: 1.5rem 0;
+            font-size: 0.85rem;
+            color: var(--orange);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .services {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🏠 Dhruba's Homelab</h1>
+        <p>Self-hosted infrastructure on Oracle Cloud ARM64</p>
+        <div class="badges">
+            <span class="badge arch">ARM64</span>
+            <span class="badge os">Ubuntu 24.04</span>
+            <span class="badge proxy">Caddy</span>
+            <span class="badge auth">Authelia SSO</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="legend">
+            <span class="legend-item"><span class="legend-dot core"></span> Core</span>
+            <span class="legend-item"><span class="legend-dot authelia"></span> Authelia SSO</span>
+            <span class="legend-item"><span class="legend-dot own-auth"></span> Service auth</span>
+        </div>
+
+        <h2 class="section-title">🔐 Core Infrastructure</h2>
+        <div class="services">
+            <div class="service">
+                <div class="top">
+                    <h2>Caddy</h2>
+                    <span class="auth-badge core">Core</span>
+                </div>
+                <div class="domain"><a>*.dg.linkpc.net</a></div>
+                <div class="desc">Reverse proxy with automatic HTTPS via Let's Encrypt. Routes all
+                    <code>*.dg.linkpc.net</code> traffic to the right backend.
+                </div>
+                <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
+            </div>
+
+            <div class="service">
+                <div class="top">
+                    <h2>Authelia</h2>
+                    <span class="auth-badge core">Core</span>
+                </div>
+                <div class="domain"><a href="https://auth.dg.linkpc.net" target="_blank">auth.dg.linkpc.net</a></div>
+                <div class="desc">SSO + 2FA authentication portal. Protects QwenPaw, Dockhand, BorgUI, and Cronmaster.
+                </div>
+                <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
+            </div>
+        </div>
+
+        <h2 class="section-title">🟣 Authelia-Protected</h2>
+        <div class="services">
+            <div class="service">
+                <div class="top">
+                    <h2>QwenPaw</h2>
+                    <span class="auth-badge authelia">Authelia</span>
+                </div>
+                <div class="domain"><a href="https://qwenpaw.dg.linkpc.net" target="_blank">qwenpaw.dg.linkpc.net</a>
+                </div>
+                <div class="desc">Open-source AI agent framework by AgentScope / Qwen Lab. This instance.</div>
+                <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
+            </div>
+
+            <div class="service">
+                <div class="top">
+                    <h2>Dockhand</h2>
+                    <span class="auth-badge authelia">Authelia</span>
+                </div>
+                <div class="domain"><a href="https://docker.dg.linkpc.net" target="_blank">docker.dg.linkpc.net</a>
+                </div>
+                <div class="desc">Modern Docker management UI — containers, compose stacks, file browser, logs.</div>
+                <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
+            </div>
+
+            <div class="service">
+                <div class="top">
+                    <h2>BorgUI</h2>
+                    <span class="auth-badge authelia">Authelia</span>
+                </div>
+                <div class="domain"><a href="https://borg.dg.linkpc.net" target="_blank">borg.dg.linkpc.net</a></div>
+                <div class="desc">Borg backup manager with built-in scheduler. Dashboard, archives, restore,
+                    notifications, and automated schedules.</div>
+                <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
+            </div>
+
+            <div class="service">
+                <div class="top">
+                    <h2>Cronmaster</h2>
+                    <span class="auth-badge authelia">Authelia</span>
+                </div>
+                <div class="domain"><a href="https://cron.dg.linkpc.net" target="_blank">cron.dg.linkpc.net</a></div>
+                <div class="desc">Scheduled job manager with human-readable syntax and live logs. Does not manage
+                    backups — BorgUI does.</div>
+                <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
+            </div>
+        </div>
+
+        <h2 class="section-title">🔵 Service Auth (Own Auth)</h2>
+        <div class="services">
+            <div class="service">
+                <div class="top">
+                    <h2>Nextcloud</h2>
+                    <span class="auth-badge own-auth">Service auth</span>
+                </div>
+                <div class="domain"><a href="https://nextcloud.dg.linkpc.net"
+                        target="_blank">nextcloud.dg.linkpc.net</a></div>
+                <div class="desc">File sync, share, calendar, contacts. Uses its own auth for desktop/mobile app
+                    support.</div>
+                <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
+            </div>
+
+            <div class="service">
+                <div class="top">
+                    <h2>Trilium Notes</h2>
+                    <span class="auth-badge own-auth">Service auth</span>
+                </div>
+                <div class="domain"><a href="https://notes.dg.linkpc.net" target="_blank">notes.dg.linkpc.net</a></div>
+                <div class="desc">Self-hosted knowledge base with hierarchical note-taking.</div>
+                <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
+            </div>
+
+            <div class="service">
+                <div class="top">
+                    <h2>OpenChamber</h2>
+                    <span class="auth-badge own-auth">Service auth</span>
+                </div>
+                <div class="domain"><a href="https://code.dg.linkpc.net" target="_blank">code.dg.linkpc.net</a></div>
+                <div class="desc">QwenPaw agent runtime. Uses its own auth for client app connections.</div>
+                <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
+            </div>
+        </div>
+
+        <div class="note">
+            ⚡ All services are containerized on isolated Docker bridge networks.
+            Only web-exposed services join the shared proxy network. No container ports are exposed to the internet.
+        </div>
+
+        <p style="color:var(--muted); font-size:0.85rem; text-align:center; margin-top:1.5rem;">
+            Repo: <a href="https://github.com/dhrubajyoti-giri/homelab" target="_blank"
+                style="color:var(--accent);">github.com/dhrubajyoti-giri/homelab</a>
+        </p>
+    </div>
+
+    <footer>
+        Built by <a href="https://github.com/dhrubajyoti-giri">Dhrubajyoti Giri</a> &middot; OCI ARM64 &middot; Ubuntu
+        24.04
+    </footer>
+</body>
+
+</html>
