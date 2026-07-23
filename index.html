@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dhrubajyoti's Homelab — Dashboard</title>
+    <title>Dhruba's Homelab — Dashboard</title>
     <style>
         :root {
             --bg: #0d1117;
@@ -276,7 +276,7 @@
 
 <body>
     <header>
-        <h1>🏠 Dhruba's Homelab</h1>
+        <h1>🏠 Dhrubajyoti's Homelab</h1>
         <p>Self-hosted infrastructure on Oracle Cloud ARM64</p>
         <div class="badges">
             <span class="badge arch">ARM64</span>
@@ -300,9 +300,9 @@
                     <h2>Caddy</h2>
                     <span class="auth-badge core">Core</span>
                 </div>
-                <div class="domain"><a>*.dg.linkpc.net</a></div>
+                <div class="domain">dg.linkpc.net</div>
                 <div class="desc">Reverse proxy with automatic HTTPS via Let's Encrypt. Routes all
-                    <code>*.dg.linkpc.net</code> traffic to the right backend.
+                    <code>*.dg.linkpc.net</code> traffic.
                 </div>
                 <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
             </div>
@@ -328,7 +328,7 @@
                 </div>
                 <div class="domain"><a href="https://qwenpaw.dg.linkpc.net" target="_blank">qwenpaw.dg.linkpc.net</a>
                 </div>
-                <div class="desc">Open-source AI agent framework by AgentScope / Qwen Lab. This instance.</div>
+                <div class="desc">Open-source AI agent framework by AgentScope / Qwen Lab.</div>
                 <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
             </div>
 
@@ -339,7 +339,7 @@
                 </div>
                 <div class="domain"><a href="https://docker.dg.linkpc.net" target="_blank">docker.dg.linkpc.net</a>
                 </div>
-                <div class="desc">Modern Docker management UI — containers, compose stacks, file browser, logs.</div>
+                <div class="desc">Docker management UI — containers, compose stacks, file browser, logs.</div>
                 <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
             </div>
 
@@ -349,8 +349,7 @@
                     <span class="auth-badge authelia">Authelia</span>
                 </div>
                 <div class="domain"><a href="https://borg.dg.linkpc.net" target="_blank">borg.dg.linkpc.net</a></div>
-                <div class="desc">Borg backup manager with built-in scheduler. Dashboard, archives, restore,
-                    notifications, and automated schedules.</div>
+                <div class="desc">Borg backup manager with built-in scheduler. Archives, restore, notifications.</div>
                 <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
             </div>
 
@@ -360,8 +359,7 @@
                     <span class="auth-badge authelia">Authelia</span>
                 </div>
                 <div class="domain"><a href="https://cron.dg.linkpc.net" target="_blank">cron.dg.linkpc.net</a></div>
-                <div class="desc">Scheduled job manager with human-readable syntax and live logs. Does not manage
-                    backups — BorgUI does.</div>
+                <div class="desc">Scheduled job manager with human-readable syntax and live logs.</div>
                 <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
             </div>
         </div>
@@ -375,8 +373,7 @@
                 </div>
                 <div class="domain"><a href="https://nextcloud.dg.linkpc.net"
                         target="_blank">nextcloud.dg.linkpc.net</a></div>
-                <div class="desc">File sync, share, calendar, contacts. Uses its own auth for desktop/mobile app
-                    support.</div>
+                <div class="desc">File sync, share, calendar, contacts.</div>
                 <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
             </div>
 
@@ -396,14 +393,14 @@
                     <span class="auth-badge own-auth">Service auth</span>
                 </div>
                 <div class="domain"><a href="https://code.dg.linkpc.net" target="_blank">code.dg.linkpc.net</a></div>
-                <div class="desc">QwenPaw agent runtime. Uses its own auth for client app connections.</div>
+                <div class="desc">QwenPaw agent runtime with its own auth.</div>
                 <div class="status-row"><span class="status-dot"></span><span class="status-label">Active</span></div>
             </div>
         </div>
 
         <div class="note">
             ⚡ All services are containerized on isolated Docker bridge networks.
-            Only web-exposed services join the shared proxy network. No container ports are exposed to the internet.
+            Only web-exposed services join the shared proxy network. No container ports exposed to the internet.
         </div>
 
         <p style="color:var(--muted); font-size:0.85rem; text-align:center; margin-top:1.5rem;">
@@ -419,3 +416,4 @@
 </body>
 
 </html>
+

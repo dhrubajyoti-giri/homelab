@@ -11,17 +11,21 @@ A containerized homelab running behind **Caddy + Authelia SSO** on a single Orac
 
 ## 📍 Quick Links
 
-| Service           | URL                                                        | Auth       |
-| ----------------- | ---------------------------------------------------------- | ---------- |
-| **Caddy**         | `*.dg.linkpc.net`                                          | —          |
-| **Authelia**      | [auth.dg.linkpc.net](https://auth.dg.linkpc.net)           | SSO portal |
-| **Nextcloud**     | [nextcloud.dg.linkpc.net](https://nextcloud.dg.linkpc.net) | Own auth   |
-| **Trilium Notes** | [notes.dg.linkpc.net](https://notes.dg.linkpc.net)         | Own auth   |
-| **BorgUI**        | [borg.dg.linkpc.net](https://borg.dg.linkpc.net)           | Authelia   |
-| **Dockhand**      | [docker.dg.linkpc.net](https://docker.dg.linkpc.net)       | Authelia   |
-| **QwenPaw**       | [qwenpaw.dg.linkpc.net](https://qwenpaw.dg.linkpc.net)     | Authelia   |
-| **Cronmaster**    | [cron.dg.linkpc.net](https://cron.dg.linkpc.net)           | Authelia   |
-| **OpenChamber**   | [code.dg.linkpc.net](https://code.dg.linkpc.net)           | Own auth   |
+| Service | URL | Auth |
+|---------|-----|------|
+| **Status Dashboard** | [homelab-status.dg.linkpc.net](https://homelab-status.dg.linkpc.net) | Public |
+
+| Service | URL | Auth |
+|---------|-----|------|
+| **Caddy** | `*.dg.linkpc.net` | — |
+| **Authelia** | [auth.dg.linkpc.net](https://auth.dg.linkpc.net) | SSO portal |
+| **Nextcloud** | [nextcloud.dg.linkpc.net](https://nextcloud.dg.linkpc.net) | Own auth |
+| **Trilium Notes** | [notes.dg.linkpc.net](https://notes.dg.linkpc.net) | Own auth |
+| **BorgUI** | [borg.dg.linkpc.net](https://borg.dg.linkpc.net) | Authelia |
+| **Dockhand** | [docker.dg.linkpc.net](https://docker.dg.linkpc.net) | Authelia |
+| **QwenPaw** | [qwenpaw.dg.linkpc.net](https://qwenpaw.dg.linkpc.net) | Authelia |
+| **Cronmaster** | [cron.dg.linkpc.net](https://cron.dg.linkpc.net) | Authelia |
+| **OpenChamber** | [code.dg.linkpc.net](https://code.dg.linkpc.net) | Own auth |
 
 ---
 
@@ -76,41 +80,40 @@ A containerized homelab running behind **Caddy + Authelia SSO** on a single Orac
 ### Traffic Flow
 
 **Authelia-protected services** (QwenPaw, Dockhand, BorgUI, Cronmaster):
-
 ```
-User → https://<svc>.dg.linkpc.net → Caddy → [unauth] → Authelia → SSO → Caddy → Backend
+User → https://<service>.dg.linkpc.net → Caddy → [unauth] → Authelia → SSO → Caddy → Backend
 ```
 
 **Direct-proxy services** (Nextcloud, Trilium, OpenChamber):
-
 ```
-User → https://<svc>.dg.linkpc.net → Caddy → Backend (handles own auth)
+User → https://<service>.dg.linkpc.net → Caddy → Backend (handles own auth)
 ```
 
 ---
 
 ## 📦 Services
 
-| Service                                                     | Subdomain                 | Auth      | Purpose                                           |
-| ----------------------------------------------------------- | ------------------------- | --------- | ------------------------------------------------- |
-| [**Caddy**](https://caddyserver.com)                        | `*.dg.linkpc.net`         | —         | Reverse proxy, automatic HTTPS (Let's Encrypt)    |
-| [**Authelia**](https://www.authelia.com)                    | `auth.dg.linkpc.net`      | SSO + 2FA | Centralized authentication portal                 |
-| [**Nextcloud**](https://nextcloud.com)                      | `nextcloud.dg.linkpc.net` | Own auth  | File sync, share, calendar, contacts              |
-| [**Trilium Notes**](https://github.com/zadam/trilium)       | `notes.dg.linkpc.net`     | Own auth  | Self-hosted knowledge base / note-taking          |
-| [**BorgUI**](https://github.com/karanhudia/borg-ui)         | `borg.dg.linkpc.net`      | Authelia  | Borg backup management with built-in scheduler    |
-| [**Dockhand**](https://github.com/Finsys/dockhand)          | `docker.dg.linkpc.net`    | Authelia  | Docker management UI (containers, compose, files) |
-| [**QwenPaw**](https://github.com/agentscope-ai/QwenPaw)     | `qwenpaw.dg.linkpc.net`   | Authelia  | AI agent framework by AgentScope / Qwen Lab       |
-| [**Cronmaster**](https://github.com/fccview/cronmaster)     | `cron.dg.linkpc.net`      | Authelia  | Cron job management UI with live logs             |
-| [**OpenChamber**](https://github.com/agentscope-ai/QwenPaw) | `code.dg.linkpc.net`      | Own auth  | QwenPaw agent runtime (with desktop app)          |
+| Service | Subdomain | Auth | Purpose |
+|---------|-----------|------|---------|
+| [**Status Dashboard**](https://homelab-status.dg.linkpc.net) | `homelab-status.dg.linkpc.net` | Public | Live service dashboard with links and status |
+| [**Caddy**](https://caddyserver.com) | `*.dg.linkpc.net` | — | Reverse proxy, automatic HTTPS (Let's Encrypt) |
+| [**Authelia**](https://www.authelia.com) | `auth.dg.linkpc.net` | SSO + 2FA | Centralized authentication portal |
+| [**Nextcloud**](https://nextcloud.com) | `nextcloud.dg.linkpc.net` | Own auth | File sync, share, calendar, contacts |
+| [**Trilium Notes**](https://github.com/zadam/trilium) | `notes.dg.linkpc.net` | Own auth | Self-hosted knowledge base / note-taking |
+| [**BorgUI**](https://github.com/karanhudia/borg-ui) | `borg.dg.linkpc.net` | Authelia | Borg backup management with built-in scheduler |
+| [**Dockhand**](https://github.com/Finsys/dockhand) | `docker.dg.linkpc.net` | Authelia | Docker management UI (containers, compose, files) |
+| [**QwenPaw**](https://github.com/agentscope-ai/QwenPaw) | `qwenpaw.dg.linkpc.net` | Authelia | AI agent framework by AgentScope / Qwen Lab |
+| [**Cronmaster**](https://github.com/fccview/cronmaster) | `cron.dg.linkpc.net` | Authelia | Cron job management UI with live logs |
+| [**OpenChamber**](https://github.com/agentscope-ai/QwenPaw) | `code.dg.linkpc.net` | Own auth | QwenPaw agent runtime (with desktop app) |
 
 ### Auth Split
 
-| Behind Authelia | Own Auth    |
-| --------------- | ----------- |
-| QwenPaw         | Nextcloud   |
-| Dockhand        | Trilium     |
-| BorgUI          | OpenChamber |
-| Cronmaster      |             |
+| Behind Authelia | Own Auth |
+|-----------------|----------|
+| QwenPaw | Nextcloud |
+| Dockhand | Trilium |
+| BorgUI | OpenChamber |
+| Cronmaster | |
 
 Services behind Authelia are web-only and don't need client app auth. Nextcloud, Trilium, and OpenChamber use their own auth so desktop/mobile apps can connect directly.
 
@@ -118,21 +121,21 @@ Services behind Authelia are web-only and don't need client app auth. Nextcloud,
 
 ## 🔒 Security Model
 
-| Principle                     | Implementation                                          |
-| ----------------------------- | ------------------------------------------------------- |
-| **Default-Deny**              | OCI security group — only ports 80 (→443) and 443 open  |
-| **Network Isolation**         | Each service on its own Docker bridge network           |
-| **Minimum Exposure**          | Only web-exposed services join the shared proxy network |
-| **Encrypted Backups**         | Borg repos encrypted with passphrase/keyfile            |
-| **No Direct Container Ports** | Everything routed through Caddy proxy                   |
+| Principle | Implementation |
+|-----------|---------------|
+| **Default-Deny** | OCI security group — only ports 80 (→443) and 443 open |
+| **Network Isolation** | Each service on its own Docker bridge network |
+| **Minimum Exposure** | Only web-exposed services join the shared proxy network |
+| **Encrypted Backups** | Borg repos encrypted with passphrase/keyfile |
+| **No Direct Container Ports** | Everything routed through Caddy proxy |
 
 ### Oracle Cloud Firewall
 
-| Direction | Source    | Port | Action                |
-| --------- | --------- | ---- | --------------------- |
-| Inbound   | 0.0.0.0/0 | 80   | Allow (redirect →443) |
-| Inbound   | 0.0.0.0/0 | 443  | Allow                 |
-| Inbound   | 0.0.0.0/0 | Any  | **Deny**              |
+| Direction | Source | Port | Action |
+|-----------|--------|------|--------|
+| Inbound | 0.0.0.0/0 | 80 | Allow (redirect →443) |
+| Inbound | 0.0.0.0/0 | 443 | Allow |
+| Inbound | 0.0.0.0/0 | Any | **Deny** |
 
 ---
 
@@ -211,14 +214,14 @@ homelab/
 
 ## 🛠 Requirements
 
-| Component      | Requirement                            |
-| -------------- | -------------------------------------- |
-| OS             | Ubuntu 24.04 LTS (ARM64)               |
-| Kernel         | Linux 6.8+                             |
-| Docker         | 24.0+                                  |
-| Docker Compose | v2.20+                                 |
-| Domain         | `*.dg.linkpc.net` → instance public IP |
-| Backup storage | OCI block volume (50 GB+ recommended)  |
+| Component | Requirement |
+|-----------|-------------|
+| OS | Ubuntu 24.04 LTS (ARM64) |
+| Kernel | Linux 6.8+ |
+| Docker | 24.0+ |
+| Docker Compose | v2.20+ |
+| Domain | `*.dg.linkpc.net` → instance public IP |
+| Backup storage | OCI block volume (50 GB+ recommended) |
 
 ---
 
@@ -228,4 +231,4 @@ Each service is governed by its own license. This repository's compose files and
 
 ---
 
-_Built by [Dhrubajyoti Giri](https://github.com/dhrubajyoti-giri)_
+*Built by [Dhrubajyoti Giri](https://github.com/dhrubajyoti-giri)*
